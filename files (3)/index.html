@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#050a0f">
+<meta name="description" content="Demonbreun Strat Options Agent — disciplined options analysis using The Strat methodology.">
+<title>STRAT-X · Demonbreun Dynasty Empire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#050a0f;overscroll-behavior:none}
+body{font-family:'Rajdhani',sans-serif;color:#e0f0ff}
+
+.app{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:0 auto;border-left:1px solid #0a2040;border-right:1px solid #0a2040}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#020d1a,#041525);border-bottom:2px solid rgba(0,170,255,.2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.logo-block{display:flex;align-items:center;gap:10px;min-width:0}
+.logo-icon{width:38px;height:38px;flex-shrink:0;background:linear-gradient(135deg,#00aaff,#0044ff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;color:#fff;box-shadow:0 0 20px rgba(0,170,255,.27)}
+.logo-name{font-size:19px;font-weight:700;letter-spacing:2.5px;color:#fff;line-height:1;text-shadow:0 0 20px rgba(0,170,255,.4)}
+.logo-sub{font-size:9px;color:#4488aa;letter-spacing:1.4px;font-family:'Share Tech Mono',monospace;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+select{background:#0a1a2a;border:1px solid rgba(0,170,255,.2);color:#00ccff;font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 8px;border-radius:6px;cursor:pointer;outline:none}
+.dot{width:8px;height:8px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* TABS */
+.tabs{display:flex;background:#030d1a;border-bottom:1px solid #0a2040;padding:0 12px;flex-shrink:0}
+.tab{padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:1.2px;color:#446688;cursor:pointer;border-bottom:2px solid transparent;font-family:'Share Tech Mono',monospace;text-transform:uppercase;transition:.2s}
+.tab.active{color:#00aaff;border-bottom-color:#00aaff}
+
+/* QUICK PROMPTS */
+.qp-bar{display:flex;gap:8px;padding:10px 12px;overflow-x:auto;background:#020c18;border-bottom:1px solid #0a2040;scrollbar-width:none;flex-shrink:0}
+.qp-bar::-webkit-scrollbar{display:none}
+.qp{background:#0a1a2a;border:1px solid #0a3050;color:#88aacc;padding:6px 12px;border-radius:20px;font-size:12px;font-family:'Share Tech Mono',monospace;cursor:pointer;white-space:nowrap;transition:.2s}
+.qp:active{border-color:rgba(0,170,255,.4);color:#00ccff}
+
+/* PANELS */
+.panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+.panel.active{display:flex;flex-direction:column}
+
+/* CHAT */
+#chatArea{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 12px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.avatar{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;font-family:'Share Tech Mono',monospace}
+.avatar.bot{background:rgba(0,170,255,.12);border:1px solid rgba(0,170,255,.27);color:#00aaff}
+.avatar.user{background:#0a2030;border:1px solid #0a3050;color:#4488aa}
+.bubble{max-width:86%;padding:12px 14px;border-radius:10px;font-size:14.5px;line-height:1.6;word-wrap:break-word}
+.bubble.bot{background:#051525;border:1px solid #0a2a3a;color:#cce8ff;border-top-left-radius:2px}
+.bubble.user{background:#0a2035;border:1px solid #0a4060;color:#88ccff;border-top-right-radius:2px}
+.bubble h4{color:#00aaff;font-size:12.5px;letter-spacing:1px;margin:10px 0 4px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;border-left:3px solid #00aaff;padding-left:8px;font-weight:700}
+.bubble h4:first-child{margin-top:0}
+.bubble strong{color:#fff}
+.bubble .bul{padding-left:6px;color:#99ccee}
+.bubble .sp{height:6px}
+.verdict{display:inline-block;padding:3px 10px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;margin:2px 0}
+.v-trade{background:rgba(0,255,136,.13);color:#00ff88;border:1px solid rgba(0,255,136,.3)}
+.v-watch{background:rgba(255,170,0,.13);color:#ffaa00;border:1px solid rgba(255,170,0,.3)}
+.v-no{background:rgba(255,68,68,.13);color:#ff6666;border:1px solid rgba(255,68,68,.3)}
+
+.typing{display:flex;gap:10px;align-items:center}
+.dots{display:flex;gap:4px;padding:14px 16px;background:#051525;border:1px solid #0a2a3a;border-radius:10px;border-top-left-radius:2px}
+.dots i{width:6px;height:6px;border-radius:50%;background:#00aaff;animation:bounce 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}
+.dots i:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+
+/* INPUT */
+.input-area{padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#030d1a;border-top:1px solid #0a2040;display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+textarea{flex:1;background:#0a1a2a;border:1px solid #0a3050;border-radius:10px;color:#cce8ff;font-family:'Rajdhani',sans-serif;font-size:16px;padding:11px 13px;resize:none;outline:none;line-height:1.5;max-height:120px;transition:border-color .2s}
+textarea:focus{border-color:rgba(0,170,255,.4)}
+textarea::placeholder{color:#2a4a6a}
+.send{background:linear-gradient(135deg,#0055aa,#0033ff);border:none;border-radius:10px;color:#fff;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px rgba(0,68,255,.27);flex-shrink:0;transition:.2s}
+.send:disabled{opacity:.35}
+
+/* GLOSSARY + RISK */
+.pad{padding:18px 14px}
+.pad h2{font-size:17px;font-weight:700;letter-spacing:2px;color:#00aaff;margin-bottom:14px;font-family:'Share Tech Mono',monospace;text-transform:uppercase}
+.pad h2.red{color:#ff4444}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.card{background:#051525;border:1px solid #0a2a3a;border-radius:8px;padding:12px 14px}
+.card .t{color:#00ccff;font-weight:700;font-size:12.5px;letter-spacing:1px;margin-bottom:4px;font-family:'Share Tech Mono',monospace}
+.card .d{color:#88aacc;font-size:13px;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#0a1a2a;color:#00aaff;padding:9px 10px;text-align:left;font-family:'Share Tech Mono',monospace;letter-spacing:1px;font-size:10.5px}
+td{padding:9px 10px;border-bottom:1px solid #0a2030;color:#99bbcc}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10.5px;font-family:'Share Tech Mono',monospace;font-weight:700}
+.b-elite{background:rgba(0,255,136,.13);color:#00ff88;border:1px solid rgba(0,255,136,.27)}
+.b-high{background:rgba(0,170,255,.13);color:#00aaff;border:1px solid rgba(0,170,255,.27)}
+.b-med{background:rgba(255,170,0,.13);color:#ffaa00;border:1px solid rgba(255,170,0,.27)}
+.b-low{background:rgba(255,68,68,.13);color:#ff6666;border:1px solid rgba(255,68,68,.27)}
+.rcard{background:#150505;border:1px solid #440a0a;border-radius:8px;padding:14px;margin-bottom:12px}
+.rcard .t{color:#ff6666;font-weight:700;font-size:13.5px;margin-bottom:8px;letter-spacing:1px}
+.rcard .d{color:#cc8888;font-size:13px;line-height:1.65}
+.disc{background:#0a0505;border:1px solid #330a0a;border-radius:8px;padding:13px 15px;margin-top:16px;color:#886666;font-size:12px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo-block">
+      <div class="logo-icon">SX</div>
+      <div>
+        <div class="logo-name">STRAT-X</div>
+        <div class="logo-sub">DEMONBREUN STRAT OPTIONS AGENT</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <select id="acct">
+        <option value="50">$50</option>
+        <option value="100" selected>$100</option>
+        <option value="250">$250</option>
+        <option value="500">$500</option>
+        <option value="1000">$1000</option>
+      </select>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="chat">⚡ Agent</div>
+    <div class="tab" data-tab="gloss">📖 Strat</div>
+    <div class="tab" data-tab="risk">⚠️ Risk</div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="panel active" id="p-chat">
+    <div class="qp-bar" id="qpBar"></div>
+    <div id="chatArea"></div>
+    <div class="input-area">
+      <textarea id="input" rows="1" placeholder="Ticker, account size, chart data…"></textarea>
+      <button class="send" id="send">➤</button>
+    </div>
+  </div>
+
+  <!-- GLOSSARY PANEL -->
+  <div class="panel" id="p-gloss">
+    <div class="pad">
+      <h2>📖 The Strat Reference</h2>
+      <div class="grid" id="glossGrid"></div>
+    </div>
+  </div>
+
+  <!-- RISK PANEL -->
+  <div class="panel" id="p-risk">
+    <div class="pad">
+      <h2 class="red">⚠️ Risk Reality Check</h2>
+      <table>
+        <thead><tr><th>SETUP QUALITY SCORE</th><th>RATING</th><th>ACTION</th></tr></thead>
+        <tbody>
+          <tr><td>90–100</td><td><span class="badge b-elite">ELITE A+</span></td><td>Trade candidate</td></tr>
+          <tr><td>80–89</td><td><span class="badge b-high">STRONG</span></td><td>Trade candidate</td></tr>
+          <tr><td>70–79</td><td><span class="badge b-med">TRADABLE</span></td><td>Reduced size</td></tr>
+          <tr><td>60–69</td><td><span class="badge b-low">WEAK</span></td><td>Paper trade only</td></tr>
+          <tr><td>Under 60</td><td><span class="badge b-low">NO TRADE</span></td><td>Stand down</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rcard" style="margin-top:18px">
+        <div class="t">💰 Small Account Survival Rules</div>
+        <div class="d">
+          <strong>Max risk per trade:</strong> 10–20% of account<br>
+          <strong>$50 account:</strong> Risk $5–$10 per trade<br>
+          <strong>$100 account:</strong> Risk $10–$20 per trade<br>
+          <strong>DTE:</strong> 7–21 days preferred. No forced 0DTE.<br>
+          <strong>Delta:</strong> 0.30–0.60 when affordable<br>
+          <strong>Spread:</strong> Reject if bid/ask &gt; 15–20% of price<br>
+          <strong>Never:</strong> naked shorts, margin, averaging down, revenge trades
+        </div>
+      </div>
+
+      <div class="rcard">
+        <div class="t">📉 What "Setup Quality" Is NOT</div>
+        <div class="d">
+          The 0–100 score rates <strong>setup cleanliness</strong>, not win probability. A 95-score setup can still lose. The Strat gives you defined triggers and invalidation — that's the edge. Discipline in cutting losers is what compounds an account, not any single trade.
+        </div>
+      </div>
+
+      <div class="disc">
+        ⚠️ <strong>DISCLAIMER:</strong> STRAT-X is an AI educational tool. It does NOT provide financial advice and cannot predict market outcomes. Options trading involves substantial risk of loss and is not suitable for all investors. All scores are setup-quality estimates, not guarantees. Never trade with money you cannot afford to lose. Consult a licensed financial advisor.<br><br>
+        Built by Demonbreun Dynasty Empire LLC. The Strat methodology was created by Rob Smith.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const acct = $('#acct');
+const chatArea = $('#chatArea');
+const input = $('#input');
+const sendBtn = $('#send');
+
+let messages = [];
+let loading = false;
+
+const WELCOME = `**STRAT-X ONLINE** ⚡
+
+Demonbreun Strat Options Agent. I analyze setups using The Strat methodology — candle scenarios (1, 2U, 2D, 3), timeframe continuity, defined triggers and invalidation.
+
+**How I work:**
+- I will not guess. If data is missing, I ask for it.
+- If the setup is not clean, I say NO TRADE.
+- I score setup quality 0–100. Under 60 = stand down.
+- I protect the account first, always.
+
+**To get an analysis, give me:**
+- Ticker + account size
+- Chart data or screenshots (Daily + 5min/15min is ideal)
+- Or just ask me to walk you through a setup
+
+Set your account size up top. What are we looking at?`;
+
+const QUICK = [
+  ["📋 Analysis Template", "Give me the full data template I should fill in for a Strat options analysis."],
+  ["📊 Analyze SPY", "I want to analyze SPY. Walk me through what data you need from me to run the full 10-step Strat analysis."],
+  ["🎯 Pre-Market Checklist", "Build me a pre-market checklist I can run every morning before looking for Strat setups."],
+  ["📚 Teach 2-1-2", "Explain the 2-1-2 continuation and reversal setups in The Strat. Give me examples of how to identify and trade them."],
+  ["🔍 Explain FTFC", "Explain Full Timeframe Continuity and why it matters so much in The Strat."],
+  ["⚠️ Size My Risk", "Given my account size, what is my max risk per trade and what contracts should I even be looking at?"],
+  ["📓 Journal Entry", "Help me log a trade in the journal format. Ask me the questions one at a time."]
+];
+
+const GLOSSARY = [
+  ["Scenario 1 — Inside Bar","Current candle stays inside prior candle's high and low. Compression. A break of either side is the trigger."],
+  ["Scenario 2U — Directional Up","Breaks prior high but NOT prior low. Bullish directional candle."],
+  ["Scenario 2D — Directional Down","Breaks prior low but NOT prior high. Bearish directional candle."],
+  ["Scenario 3 — Outside Bar","Breaks BOTH prior high and prior low. Often precedes reversals."],
+  ["2-1-2 Continuation","Directional bar, inside bar, then directional bar in the SAME direction. Trend continues."],
+  ["2-1-2 Reversal","Directional bar, inside bar, then directional bar the OPPOSITE way. Trend flips."],
+  ["3-1-2 Reversal","Outside bar, inside bar, then directional break. High-quality reversal structure."],
+  ["2-2 Reversal","Directional bar immediately followed by an opposite directional bar. Failed move."],
+  ["PMG — Pivot Machine Gun","Series of consecutive higher lows or lower highs that get swept, triggering a sharp reversal."],
+  ["FTFC","Full Timeframe Continuity. Monthly, Weekly, Daily, and intraday all aligned in one direction. Maximum edge."],
+  ["Trigger","The exact price that activates the setup — usually the break of the prior candle's high or low."],
+  ["Invalidation","The exact price where the setup is proven wrong. Your stop lives here. No invalidation = no trade."],
+  ["Magnitude","How much room price has to run before hitting the next meaningful level. Thin magnitude kills option trades."],
+  ["Broadening Formation","Higher highs AND lower lows. The outer edges are high-probability reversal zones."],
+  ["Failed Breakdown","Price loses a level, then reclaims it. Trapped sellers fuel the move up."],
+  ["Failed Breakout","Price breaks a high, then loses it. Trapped buyers fuel the move down."],
+  ["DTE","Days To Expiration. 7–21 DTE preferred for small accounts to reduce theta bleed."],
+  ["Delta","Rate of option price change per $1 underlying move. 0.30–0.60 is the target zone."]
+];
+
+// ---------- rendering ----------
+function fmt(txt){
+  const lines = txt.split('\n');
+  let html = '';
+  for (let line of lines) {
+    let t = line.trim();
+    if (!t) { html += '<div class="sp"></div>'; continue; }
+
+    // verdict badges
+    const up = t.toUpperCase();
+    if (up.includes('TRADE CANDIDATE')) t = t.replace(/TRADE CANDIDATE/gi,'<span class="verdict v-trade">TRADE CANDIDATE</span>');
+    else if (up.includes('WATCHLIST ONLY')) t = t.replace(/WATCHLIST ONLY/gi,'<span class="verdict v-watch">WATCHLIST ONLY</span>');
+    else if (up.includes('NO TRADE')) t = t.replace(/NO TRADE/gi,'<span class="verdict v-no">NO TRADE</span>');
+
+    // full-line bold = header
+    if (/^\*\*[^*]+\*\*:?$/.test(t)) {
+      html += '<h4>' + t.replace(/\*\*/g,'').replace(/:$/,'') + '</h4>';
+      continue;
+    }
+    // markdown headers
+    if (/^#{1,4}\s/.test(t)) {
+      html += '<h4>' + t.replace(/^#{1,4}\s/,'') + '</h4>';
+      continue;
+    }
+    t = t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    if (/^[-•*]\s/.test(t)) html += '<div class="bul">• ' + t.replace(/^[-•*]\s/,'') + '</div>';
+    else html += '<div>' + t + '</div>';
+  }
+  return html;
+}
+
+function addMsg(role, content){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'avatar ' + (role === 'assistant' ? 'bot' : 'user');
+  av.textContent = role === 'assistant' ? 'SX' : 'YOU';
+  const bub = document.createElement('div');
+  bub.className = 'bubble ' + (role === 'assistant' ? 'bot' : 'user');
+  if (role === 'assistant') bub.innerHTML = fmt(content);
+  else bub.textContent = content;
+  wrap.appendChild(av); wrap.appendChild(bub);
+  chatArea.appendChild(wrap);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function showTyping(){
+  const d = document.createElement('div');
+  d.className = 'typing'; d.id = 'typing';
+  d.innerHTML = '<div class="avatar bot">SX</div><div class="dots"><i></i><i></i><i></i></div>';
+  chatArea.appendChild(d);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+function hideTyping(){ const t = $('#typing'); if (t) t.remove(); }
+
+// ---------- send ----------
+async function send(text){
+  const msg = (text || input.value).trim();
+  if (!msg || loading) return;
+
+  addMsg('user', msg);
+  messages.push({ role:'user', content: msg });
+  input.value = ''; input.style.height = 'auto';
+  loading = true; sendBtn.disabled = true;
+  showTyping();
+
+  try {
+    const r = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages, accountSize: acct.value })
+    });
+    const data = await r.json();
+    hideTyping();
+    if (!r.ok) {
+      addMsg('assistant', '⚠️ **Error:** ' + (data.error || 'Request failed'));
+    } else {
+      addMsg('assistant', data.reply);
+      messages.push({ role:'assistant', content: data.reply });
+    }
+  } catch(e){
+    hideTyping();
+    addMsg('assistant', '⚠️ **Connection error.** ' + e.message);
+  } finally {
+    loading = false; sendBtn.disabled = false;
+  }
+}
+
+// ---------- init ----------
+QUICK.forEach(([label, prompt]) => {
+  const b = document.createElement('button');
+  b.className = 'qp'; b.textContent = label;
+  b.onclick = () => send(prompt);
+  $('#qpBar').appendChild(b);
+});
+
+GLOSSARY.forEach(([term, def]) => {
+  const c = document.createElement('div');
+  c.className = 'card';
+  c.innerHTML = '<div class="t">'+term+'</div><div class="d">'+def+'</div>';
+  $('#glossGrid').appendChild(c);
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    $('#p-' + tab.dataset.tab).classList.add('active');
+  };
+});
+
+sendBtn.onclick = () => send();
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+});
+
+addMsg('assistant', WELCOME);
+</script>
+</body>
+</html>
